@@ -166,6 +166,13 @@ allprojects {
     }
 }
 
+// Compose
+android {
+    buildFeatures { compose true }
+    composeOptions { kotlinCompilerExtensionVersion = "1.3.2" }
+}
+
+
 dependencies {
     wearApp project(':wear')
 
@@ -189,9 +196,18 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    // Compose
+    api "androidx.compose.runtime:runtime:$compose_version"
+    api "androidx.compose.ui:ui:$compose_version"
+    api "androidx.compose.foundation:foundation:$compose_version"
+    api "androidx.compose.foundation:foundation-layout:$compose_version"
+    api "androidx.compose.material:material:$compose_version"
+    api "androidx.compose.runtime:runtime-livedata:$compose_version"
+    api "androidx.compose.ui:ui-tooling:$compose_version"
+
     /* Dagger2 - We are going to use dagger.android which includes
-     * support for Activity and fragment injection so we need to include
-     * the following dependencies */
+      * support for Activity and fragment injection so we need to include
+      * the following dependencies */
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
     annotationProcessor "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"

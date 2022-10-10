@@ -10,11 +10,26 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import dagger.android.support.DaggerFragment
 import info.nightscout.androidaps.R
 import info.nightscout.androidaps.databinding.OpenapsFragmentBinding
+import info.nightscout.androidaps.interfaces.APS
 import info.nightscout.androidaps.interfaces.ActivePlugin
 import info.nightscout.androidaps.interfaces.ResourceHelper
 import info.nightscout.androidaps.plugins.aps.events.EventOpenAPSUpdateGui
@@ -123,6 +138,7 @@ class OpenAPSFragment : DaggerFragment(), MenuProvider {
     @Synchronized
     private fun updateGUI() {
         if (_binding == null) return
+        binding.composeView.setContent { openAPSFragment(activePlugin.activeAPS) }
         val openAPSPlugin = activePlugin.activeAPS
         openAPSPlugin.lastAPSResult?.let { lastAPSResult ->
             binding.result.text = jsonFormatter.format(lastAPSResult.json)
@@ -170,5 +186,34 @@ class OpenAPSFragment : DaggerFragment(), MenuProvider {
         binding.request.text = ""
         binding.lastrun.text = ""
         binding.swipeRefresh.isRefreshing = false
+    }
+
+    @Composable
+    fun openAPSFragment(openAPS: APS) {
+        Text(text = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        // Column(modifier = Modifier.fillMaxWidth()) {
+        //     row(R.string.openapsma_lastrun_label, if (openAPS.lastAPSRun != 0L) dateUtil.dateAndTimeString(openAPS.lastAPSRun) else "")
+        // }
+    }
+
+    @Composable
+    fun row(@StringRes label: Int, value: String) {
+        Row(modifier = Modifier.fillMaxWidth().focusTarget()) {
+            Text(
+                text = stringResource(id = label),
+                modifier = Modifier.fillMaxWidth().weight(2f).padding(end = 5.dp).size(14.dp),
+                textAlign = TextAlign.End
+            )
+            Text(
+                text = ":",
+                modifier = Modifier.width(5.dp).padding(start = 2.dp, end = 2.dp).size(14.dp),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = value,
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 5.dp).size(14.dp),
+                textAlign = TextAlign.Start
+            )
+        }
     }
 }
