@@ -1,9 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 // The frame contents contained in the original frame rows from the Combo below.
 // This is used as a reference to see if frame conversion and assembly is correct.
@@ -101,9 +99,9 @@ class DisplayFrameTest {
         for (y in 0 until DISPLAY_FRAME_HEIGHT) {
             for (x in 0 until DISPLAY_FRAME_WIDTH) {
                 when (Pair(x, y)) {
-                    Pair(1, 0) -> assertEquals(true, displayFrame.getPixelAt(x, y))
-                    Pair(0, 1) -> assertEquals(true, displayFrame.getPixelAt(x, y))
-                    else -> assertEquals(false, displayFrame.getPixelAt(x, y))
+                    Pair(1, 0) -> Assertions.assertEquals(true, displayFrame.getPixelAt(x, y))
+                    Pair(0, 1) -> Assertions.assertEquals(true, displayFrame.getPixelAt(x, y))
+                    else -> Assertions.assertEquals(false, displayFrame.getPixelAt(x, y))
                 }
             }
         }
@@ -127,19 +125,19 @@ class DisplayFrameTest {
         // same index, so we expect a complete frame.
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 0, originalRtDisplayFrameRows[0])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 1, originalRtDisplayFrameRows[1])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 2, originalRtDisplayFrameRows[2])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 3, originalRtDisplayFrameRows[3])
-        assertFalse(displayFrame == null)
+        Assertions.assertFalse(displayFrame == null)
 
         // Check that the assembled frame is correct.
-        compareWithReference(displayFrame)
+        compareWithReference(displayFrame!!)
     }
 
     @Test
@@ -156,31 +154,31 @@ class DisplayFrameTest {
         // The first rows with index 0x17.
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 0, originalRtDisplayFrameRows[0])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 1, originalRtDisplayFrameRows[1])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 2, originalRtDisplayFrameRows[2])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         // First row with index 0x18. This should reset the assembler's contents,
         // restarting its assembly from scratch.
 
         displayFrame = assembler.processRTDisplayPayload(0x18, 0, originalRtDisplayFrameRows[0])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x18, 1, originalRtDisplayFrameRows[1])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x18, 2, originalRtDisplayFrameRows[2])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x18, 3, originalRtDisplayFrameRows[3])
-        assertFalse(displayFrame == null)
+        Assertions.assertFalse(displayFrame == null)
 
         // Check that the completed frame is OK.
-        compareWithReference(displayFrame)
+        compareWithReference(displayFrame!!)
     }
 
     @Test
@@ -192,19 +190,19 @@ class DisplayFrameTest {
         // are supplied to the assembler out-of-order.
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 2, originalRtDisplayFrameRows[2])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 1, originalRtDisplayFrameRows[1])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 3, originalRtDisplayFrameRows[3])
-        assertTrue(displayFrame == null)
+        Assertions.assertTrue(displayFrame == null)
 
         displayFrame = assembler.processRTDisplayPayload(0x17, 0, originalRtDisplayFrameRows[0])
-        assertFalse(displayFrame == null)
+        Assertions.assertFalse(displayFrame == null)
 
         // Check that the assembled frame is correct.
-        compareWithReference(displayFrame)
+        compareWithReference(displayFrame!!)
     }
 
     private fun dumpDisplayFrameContents(displayFrame: DisplayFrame) {
@@ -229,7 +227,7 @@ class DisplayFrameTest {
                     dumpDisplayFrameContents(displayFrame)
                 }
 
-                assertTrue(equal)
+                Assertions.assertTrue(equal)
             }
         }
     }

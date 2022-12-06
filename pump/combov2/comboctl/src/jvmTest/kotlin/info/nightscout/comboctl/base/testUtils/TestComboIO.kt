@@ -6,8 +6,8 @@ import info.nightscout.comboctl.base.ComboIO
 import info.nightscout.comboctl.base.TransportLayer
 import info.nightscout.comboctl.base.byteArrayListOfInts
 import info.nightscout.comboctl.base.toTransportLayerPacket
-import kotlin.test.assertNotNull
 import kotlinx.coroutines.channels.Channel
+import org.junit.jupiter.api.Assertions
 
 class TestComboIO : ComboIO {
     val sentPacketData = newTestPacketSequence()
@@ -20,7 +20,7 @@ class TestComboIO : ComboIO {
         sentPacketData.add(dataToSend)
 
         if (respondToRTKeypressWithConfirmation) {
-            assertNotNull(pumpClientCipher)
+            Assertions.assertNotNull(pumpClientCipher)
             val tpLayerPacket = dataToSend.toTransportLayerPacket()
             if (tpLayerPacket.command == TransportLayer.Command.DATA) {
                 try {

@@ -20,17 +20,14 @@ import info.nightscout.comboctl.parser.testFrameW6CancelTbrWarningScreen
 import info.nightscout.comboctl.parser.testTimeAndDateSettingsHourPolishScreen
 import info.nightscout.comboctl.parser.testTimeAndDateSettingsHourRussianScreen
 import info.nightscout.comboctl.parser.testTimeAndDateSettingsHourTurkishScreen
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ParsedDisplayFrameStreamTest {
     companion object {
@@ -48,8 +45,8 @@ class ParsedDisplayFrameStreamTest {
         val stream = ParsedDisplayFrameStream()
         stream.feedDisplayFrame(testFrameStandardBolusMenuScreen)
         val parsedFrame = stream.getParsedDisplayFrame()
-        assertNotNull(parsedFrame)
-        assertEquals(ParsedScreen.StandardBolusMenuScreen, parsedFrame.parsedScreen)
+        Assertions.assertNotNull(parsedFrame)
+        Assertions.assertEquals(ParsedScreen.StandardBolusMenuScreen, parsedFrame?.parsedScreen)
     }
 
     @Test
@@ -59,7 +56,7 @@ class ParsedDisplayFrameStreamTest {
         val stream = ParsedDisplayFrameStream()
         stream.feedDisplayFrame(null)
         val parsedFrame = stream.getParsedDisplayFrame()
-        assertNull(parsedFrame)
+        Assertions.assertNull(parsedFrame)
     }
 
     @Test
@@ -116,8 +113,8 @@ class ParsedDisplayFrameStreamTest {
             launch {
                 while (true) {
                     val parsedFrame = stream.getParsedDisplayFrame(filterDuplicates = true)
-                    assertNotNull(parsedFrame)
-                    parsedFrameList.add(parsedFrame)
+                    Assertions.assertNotNull(parsedFrame)
+                    parsedFrameList.add(parsedFrame!!)
                     if (parsedFrameList.size >= 4)
                         break
                 }
@@ -129,7 +126,7 @@ class ParsedDisplayFrameStreamTest {
 
         // We expect _one_ ParsedScreen.NormalMainScreen
         // (the other frame with the equal content must be filtered out).
-        assertEquals(
+        Assertions.assertEquals(
             ParsedScreen.MainScreen(
                 MainScreenContent.Normal(
                     currentTime = timeWithoutDate(hour = 10, minute = 20),
@@ -142,7 +139,7 @@ class ParsedDisplayFrameStreamTest {
         )
         // Next we expect an UnrecognizedScreen result after the change from NormalMainScreen
         // to a frame (unrecognizableDisplayFrame1A) that could not be recognized.
-        assertEquals(
+        Assertions.assertEquals(
             ParsedScreen.UnrecognizedScreen,
             parsedFrameIter.next().parsedScreen
         )
@@ -151,13 +148,13 @@ class ParsedDisplayFrameStreamTest {
         // unrecognizableDisplayFrame1A and 1B. Importantly, 1B must have been
         // filtered out, since both 1A and 1B could not be recognized _and_ have
         // equal pixel content.
-        assertEquals(
+        Assertions.assertEquals(
             ParsedScreen.UnrecognizedScreen,
             parsedFrameIter.next().parsedScreen
         )
         // Since unrecognizableDisplayFrame1B must have been filtered out,
         // the next result we expect is the StandardBolusMenuScreen.
-        assertEquals(
+        Assertions.assertEquals(
             ParsedScreen.StandardBolusMenuScreen,
             parsedFrameIter.next().parsedScreen
         )
@@ -195,8 +192,8 @@ class ParsedDisplayFrameStreamTest {
             launch {
                 while (true) {
                     val parsedFrame = stream.getParsedDisplayFrame(filterDuplicates = true)
-                    assertNotNull(parsedFrame)
-                    parsedFrameList.add(parsedFrame)
+                    Assertions.assertNotNull(parsedFrame)
+                    parsedFrameList.add(parsedFrame!!)
                     if (parsedFrameList.size >= 2)
                         break
                 }
@@ -206,9 +203,9 @@ class ParsedDisplayFrameStreamTest {
 
         val parsedFrameIter = parsedFrameList.listIterator()
 
-        assertEquals(2, parsedFrameList.size)
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 14), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(2, parsedFrameList.size)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 14), parsedFrameIter.next().parsedScreen)
     }
 
     @Test
@@ -230,13 +227,13 @@ class ParsedDisplayFrameStreamTest {
             stream.resetDuplicate()
             stream.feedDisplayFrame(displayFrame)
             val parsedFrame = stream.getParsedDisplayFrame()
-            assertNotNull(parsedFrame)
-            parsedFrameList.add(parsedFrame)
+            Assertions.assertNotNull(parsedFrame)
+            parsedFrameList.add(parsedFrame!!)
         }
         val parsedFrameIter = parsedFrameList.listIterator()
 
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
     }
 
     @Test
@@ -268,8 +265,8 @@ class ParsedDisplayFrameStreamTest {
             launch {
                 while (true) {
                     val parsedFrame = stream.getParsedDisplayFrame(filterDuplicates = false)
-                    assertNotNull(parsedFrame)
-                    parsedFrameList.add(parsedFrame)
+                    Assertions.assertNotNull(parsedFrame)
+                    parsedFrameList.add(parsedFrame!!)
                     if (parsedFrameList.size >= 2)
                         break
                 }
@@ -279,8 +276,8 @@ class ParsedDisplayFrameStreamTest {
 
         val parsedFrameIter = parsedFrameList.listIterator()
 
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFrameIter.next().parsedScreen)
     }
 
     @Test
@@ -294,29 +291,29 @@ class ParsedDisplayFrameStreamTest {
         // We expect normal parsing behavior.
         stream.feedDisplayFrame(testTimeAndDateSettingsHourRussianScreen)
         val parsedFirstFrame = stream.getParsedDisplayFrame()
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFirstFrame!!.parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedFirstFrame!!.parsedScreen)
 
         // Feed a W6 screen, but with alert screen detection disabled.
         // We expect normal parsing behavior.
         stream.feedDisplayFrame(testFrameW6CancelTbrWarningScreen)
         val parsedWarningFrame = stream.getParsedDisplayFrame(processAlertScreens = false)
-        assertEquals(ParsedScreen.AlertScreen(AlertScreenContent.Warning(6)), parsedWarningFrame!!.parsedScreen)
+        Assertions.assertEquals(ParsedScreen.AlertScreen(AlertScreenContent.Warning(6)), parsedWarningFrame!!.parsedScreen)
 
         // Feed a W6 screen, but with alert screen detection enabled.
         // We expect the alert screen to be detected and an exception
         // to be thrown as a result.
-        val alertScreenException = assertFailsWith<AlertScreenException> {
+        val alertScreenException = assertThrows<AlertScreenException> {
             stream.feedDisplayFrame(testFrameW6CancelTbrWarningScreen)
             stream.getParsedDisplayFrame(processAlertScreens = true)
         }
-        assertIs<AlertScreenContent.Warning>(alertScreenException.alertScreenContent)
-        assertEquals(6, (alertScreenException.alertScreenContent as AlertScreenContent.Warning).code)
+        Assertions.assertTrue(alertScreenException.alertScreenContent is AlertScreenContent.Warning)
+        Assertions.assertEquals(6, (alertScreenException.alertScreenContent as AlertScreenContent.Warning).code)
 
         // Feed another dummy non-alert screen to see that the stream
         // parses correctly even after an AlertScreenException.
         stream.feedDisplayFrame(testTimeAndDateSettingsHourTurkishScreen)
         val parsedLastFrame = stream.getParsedDisplayFrame()
-        assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedLastFrame!!.parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TimeAndDateSettingsHourScreen(hour = 13), parsedLastFrame!!.parsedScreen)
     }
 
     @Test
@@ -348,8 +345,8 @@ class ParsedDisplayFrameStreamTest {
             launch {
                 while (true) {
                     val parsedFrame = stream.getParsedDisplayFrame(filterDuplicates = false)
-                    assertNotNull(parsedFrame)
-                    parsedFrameList.add(parsedFrame)
+                    Assertions.assertNotNull(parsedFrame)
+                    parsedFrameList.add(parsedFrame!!)
                     if (parsedFrameList.size >= 2)
                         break
                 }
@@ -359,11 +356,11 @@ class ParsedDisplayFrameStreamTest {
 
         val parsedFrameIter = parsedFrameList.listIterator()
 
-        assertEquals(2, parsedFrameList.size)
-        assertEquals(
+        Assertions.assertEquals(2, parsedFrameList.size)
+        Assertions.assertEquals(
             ParsedScreen.TemporaryBasalRatePercentageScreen(percentage = 110, remainingDurationInMinutes = 30),
             parsedFrameIter.next().parsedScreen
         )
-        assertEquals(ParsedScreen.TemporaryBasalRateDurationScreen(durationInMinutes = 30), parsedFrameIter.next().parsedScreen)
+        Assertions.assertEquals(ParsedScreen.TemporaryBasalRateDurationScreen(durationInMinutes = 30), parsedFrameIter.next().parsedScreen)
     }
 }

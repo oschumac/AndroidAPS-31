@@ -1,8 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.text.Charsets
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class CRCTest {
     @Test
@@ -11,6 +10,6 @@ class CRCTest {
 
         val expectedChecksum = 0x02A2
         val actualChecksum = calculateCRC16MCRF4XX(inputData)
-        assertEquals(expectedChecksum, actualChecksum)
+        Assertions.assertEquals(expectedChecksum, actualChecksum)
     }
 }

@@ -1,9 +1,8 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 // Payload which contains some bytes that equal "special" or "reserved" bytes.
 // These bytes are 0xCC and 0x77.
@@ -41,7 +40,7 @@ class ComboFrameTest {
         // Frame the payload and check that the framing is done correctly.
 
         val producedEscapedFrameData = payloadDataWithSpecialBytes.toComboFrame()
-        assertEquals(frameDataWithEscapedSpecialBytes, producedEscapedFrameData)
+        Assertions.assertEquals(frameDataWithEscapedSpecialBytes, producedEscapedFrameData)
     }
 
     @Test
@@ -52,8 +51,8 @@ class ComboFrameTest {
         parser.pushData(frameDataWithEscapedSpecialBytes)
 
         val parsedPayloadData = parser.parseFrame()
-        assertTrue(parsedPayloadData != null)
-        assertEquals(payloadDataWithSpecialBytes, parsedPayloadData)
+        Assertions.assertTrue(parsedPayloadData != null)
+        Assertions.assertEquals(payloadDataWithSpecialBytes, parsedPayloadData)
     }
 
     @Test
@@ -96,13 +95,13 @@ class ComboFrameTest {
         // it to actually parse something yet.
         parser.pushData(partialFrameData1)
         var parsedPayloadData = parser.parseFrame()
-        assertEquals(null, parsedPayloadData)
+        Assertions.assertEquals(null, parsedPayloadData)
 
         // Push the second chunk. We still don't expect a parsed frame,
         // since the second chunk does not complete the first frame yet.
         parser.pushData(partialFrameData2)
         parsedPayloadData = parser.parseFrame()
-        assertEquals(null, parsedPayloadData)
+        Assertions.assertEquals(null, parsedPayloadData)
 
         // Push the last chunk. With that chunk, the parser accumulated
         // enough data to parse the first frame and an additional frame.
@@ -110,14 +109,14 @@ class ComboFrameTest {
         // return a non-null value - the expected payloads.
         parser.pushData(partialFrameData3)
         parsedPayloadData = parser.parseFrame()
-        assertEquals(payloadFromPartialData1, parsedPayloadData!!)
+        Assertions.assertEquals(payloadFromPartialData1, parsedPayloadData!!)
         parsedPayloadData = parser.parseFrame()
-        assertEquals(payloadFromPartialData2, parsedPayloadData!!)
+        Assertions.assertEquals(payloadFromPartialData2, parsedPayloadData!!)
 
         // There is no accumulated data left for parsing, so we
         // expect the parseFrame() call to return null.
         parsedPayloadData = parser.parseFrame()
-        assertEquals(null, parsedPayloadData)
+        Assertions.assertEquals(null, parsedPayloadData)
     }
 
     @Test
@@ -150,19 +149,19 @@ class ComboFrameTest {
         // anything yet.
         parser.pushData(partialFrameDataWithSpecialBytes1)
         var parsedPayloadData = parser.parseFrame()
-        assertEquals(null, parsedPayloadData)
+        Assertions.assertEquals(null, parsedPayloadData)
 
         // Push the second chunk. The frame is now complete. The parser
         // should now find the frame and extract the payload, in correct
         // un-escaped form.
         parser.pushData(partialFrameDataWithSpecialBytes2)
         parsedPayloadData = parser.parseFrame()
-        assertEquals(payloadFromPartialDataWithSpecialBytes, parsedPayloadData!!)
+        Assertions.assertEquals(payloadFromPartialDataWithSpecialBytes, parsedPayloadData!!)
 
         // There is no accumulated data left for parsing, so we
         // expect the parseFrame() call to return null.
         parsedPayloadData = parser.parseFrame()
-        assertEquals(null, parsedPayloadData)
+        Assertions.assertEquals(null, parsedPayloadData)
     }
 
     @Test
@@ -182,7 +181,7 @@ class ComboFrameTest {
 
         parser.pushData(frameDataWithNonDelimiterOutsideOfFrame)
 
-        assertFailsWith<FrameParseException> { parser.parseFrame() }
+        assertThrows<FrameParseException> { parser.parseFrame() }
     }
 
     @Test
@@ -202,6 +201,6 @@ class ComboFrameTest {
 
         parser.pushData(frameDataWithInvalidEscapeByteCombination)
 
-        assertFailsWith<FrameParseException> { parser.parseFrame() }
+        assertThrows<FrameParseException> { parser.parseFrame() }
     }
 }

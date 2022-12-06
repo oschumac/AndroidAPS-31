@@ -5,16 +5,11 @@ import info.nightscout.comboctl.base.testUtils.TestPumpStateStore
 import info.nightscout.comboctl.base.testUtils.WatchdogTimeoutException
 import info.nightscout.comboctl.base.testUtils.coroutineScopeWithWatchdog
 import info.nightscout.comboctl.base.testUtils.runBlockingWithWatchdog
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.Job
 import kotlinx.datetime.UtcOffset
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class TransportLayerTest {
     @Test
@@ -37,14 +32,14 @@ class TransportLayerTest {
 
         // Check the individual properties.
 
-        assertEquals(0x10, packet.version)
-        assertFalse(packet.sequenceBit)
-        assertFalse(packet.reliabilityBit)
-        assertEquals(TransportLayer.Command.REQUEST_PAIRING_CONNECTION, packet.command)
-        assertEquals(0xF0.toByte(), packet.address)
-        assertEquals(Nonce.nullNonce(), packet.nonce)
-        assertEquals(byteArrayListOfInts(0x99, 0x44), packet.payload)
-        assertEquals(NullMachineAuthCode, packet.machineAuthenticationCode)
+        Assertions.assertEquals(0x10, packet.version)
+        Assertions.assertFalse(packet.sequenceBit)
+        Assertions.assertFalse(packet.reliabilityBit)
+        Assertions.assertEquals(TransportLayer.Command.REQUEST_PAIRING_CONNECTION, packet.command)
+        Assertions.assertEquals(0xF0.toByte(), packet.address)
+        Assertions.assertEquals(Nonce.nullNonce(), packet.nonce)
+        Assertions.assertEquals(byteArrayListOfInts(0x99, 0x44), packet.payload)
+        Assertions.assertEquals(NullMachineAuthCode, packet.machineAuthenticationCode)
     }
 
     @Test
@@ -74,7 +69,7 @@ class TransportLayerTest {
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 // MAC
         )
 
-        assertEquals(byteList, expectedPacketData)
+        Assertions.assertEquals(byteList, expectedPacketData)
     }
 
     @Test
@@ -94,16 +89,16 @@ class TransportLayerTest {
         // Check that the computed CRC is correct.
         packet.computeCRC16Payload()
         val expectedCRCPayload = byteArrayListOfInts(0xE1, 0x7B)
-        assertEquals(expectedCRCPayload, packet.payload)
+        Assertions.assertEquals(expectedCRCPayload, packet.payload)
 
         // The CRC should match, since it was just computed.
-        assertTrue(packet.verifyCRC16Payload())
+        Assertions.assertTrue(packet.verifyCRC16Payload())
 
         // Simulate data corruption by altering the CRC itself.
         // This should produce a CRC mismatch, since the check
         // will recompute the CRC from the header data.
         packet.payload[0] = (packet.payload[0].toPosInt() xor 0xFF).toByte()
-        assertFalse(packet.verifyCRC16Payload())
+        Assertions.assertFalse(packet.verifyCRC16Payload())
     }
 
     @Test
@@ -126,15 +121,15 @@ class TransportLayerTest {
         // Check that the computed MAC is correct.
         packet.authenticate(cipher)
         val expectedMAC = MachineAuthCode(byteArrayListOfInts(0x00, 0xC5, 0x48, 0xB3, 0xA8, 0xE6, 0x97, 0x76))
-        assertEquals(expectedMAC, packet.machineAuthenticationCode)
+        Assertions.assertEquals(expectedMAC, packet.machineAuthenticationCode)
 
         // The MAC should match, since it was just computed.
-        assertTrue(packet.verifyAuthentication(cipher))
+        Assertions.assertTrue(packet.verifyAuthentication(cipher))
 
         // Simulate data corruption by altering the payload.
         // This should produce a MAC mismatch.
         packet.payload[0] = 0xFF.toByte()
-        assertFalse(packet.verifyAuthentication(cipher))
+        Assertions.assertFalse(packet.verifyAuthentication(cipher))
     }
 
     @Test
@@ -196,10 +191,10 @@ class TransportLayerTest {
                 machineAuthenticationCode = MachineAuthCode(byteArrayListOfInts(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00))
             )
 
-            assertEquals(1, testComboIO.sentPacketData.size)
-            assertEquals(expectedReqPairingConnectionPacket.toByteList(), testComboIO.sentPacketData[0])
+            Assertions.assertEquals(1, testComboIO.sentPacketData.size)
+            Assertions.assertEquals(expectedReqPairingConnectionPacket.toByteList(), testComboIO.sentPacketData[0])
 
-            assertEquals(pairingConnectionRequestAcceptedPacket.toByteList(), receivedPacket.toByteList())
+            Assertions.assertEquals(pairingConnectionRequestAcceptedPacket.toByteList(), receivedPacket.toByteList())
         }
     }
 
@@ -268,8 +263,8 @@ class TransportLayerTest {
             System.err.println(
                 "Exception thrown by in packet receiver (this exception was expected by the test): $expectedError"
             )
-            assertNotNull(expectedError)
-            assertIs<TransportLayer.ErrorResponseException>(expectedError!!.cause)
+            Assertions.assertNotNull(expectedError)
+            Assertions.assertTrue(expectedError!!.cause is TransportLayer.ErrorResponseException)
 
             // At this point, the packet receiver is not running anymore
             // due to the exception. Attempts at sending and receiving
@@ -278,7 +273,7 @@ class TransportLayerTest {
             // error in a POSIX-esque style, where return codes inform
             // about a failure that previously happened.
 
-            val exceptionThrownBySendCall = assertFailsWith<TransportLayer.PacketReceiverException> {
+            val exceptionThrownBySendCall = assertThrows<TransportLayer.PacketReceiverException> {
                 // The actual packet does not matter here. We just
                 // use createRequestPairingConnectionPacketInfo() to
                 // be able to use send(). Might as well use any
@@ -288,15 +283,15 @@ class TransportLayerTest {
             System.err.println(
                 "Exception thrown by send() call (this exception was expected by the test): $exceptionThrownBySendCall"
             )
-            assertIs<TransportLayer.ErrorResponseException>(exceptionThrownBySendCall.cause)
+            Assertions.assertTrue(exceptionThrownBySendCall.cause is TransportLayer.ErrorResponseException)
 
-            val exceptionThrownByReceiveCall = assertFailsWith<TransportLayer.PacketReceiverException> {
+            val exceptionThrownByReceiveCall = assertThrows<TransportLayer.PacketReceiverException> {
                 tpLayerIO.receive()
             }
             System.err.println(
                 "Exception thrown by receive() call (this exception was expected by the test): $exceptionThrownByReceiveCall"
             )
-            assertIs<TransportLayer.ErrorResponseException>(exceptionThrownByReceiveCall.cause)
+            Assertions.assertTrue(exceptionThrownByReceiveCall.cause is TransportLayer.ErrorResponseException)
 
             tpLayerIO.stop()
         }
@@ -391,13 +386,13 @@ class TransportLayerTest {
             // Check that we received 2 non-DATA packets.
             for (i in 0 until 2) {
                 val tpLayerPacket = tpLayerIO.receive()
-                assertNotEquals(TransportLayer.Command.DATA, tpLayerPacket.command)
+                Assertions.assertNotEquals(TransportLayer.Command.DATA, tpLayerPacket.command)
             }
 
             // An attempt at receiving another packet should never
             // finish, since any packet other than the 2 non-DATA
             // ones must have been filtered out.
-            assertFailsWith<WatchdogTimeoutException> {
+            assertThrows<WatchdogTimeoutException> {
                 coroutineScopeWithWatchdog(1000) {
                     tpLayerIO.receive()
                 }
@@ -405,7 +400,7 @@ class TransportLayerTest {
 
             tpLayerIO.stop()
 
-            assertEquals(1, numReceivedDataPackets)
+            Assertions.assertEquals(1, numReceivedDataPackets)
         }
     }
 }

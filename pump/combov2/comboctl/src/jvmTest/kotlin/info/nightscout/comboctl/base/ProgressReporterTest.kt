@@ -1,7 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class ProgressReporterTest {
     // NOTE: In the tests here, the progress sequences are fairly
@@ -10,7 +10,7 @@ class ProgressReporterTest {
 
     @Test
     fun testBasicProgress() {
-        val progressReporter = ProgressReporter<Unit>(
+        val progressReporter = ProgressReporter(
             listOf(
                 BasicProgressStage.EstablishingBtConnection::class,
                 BasicProgressStage.PerformingConnectionHandshake::class,
@@ -20,7 +20,7 @@ class ProgressReporterTest {
             Unit
         )
 
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.Idle, 0.0),
             progressReporter.progressFlow.value
         )
@@ -28,7 +28,7 @@ class ProgressReporterTest {
         progressReporter.setCurrentProgressStage(
             BasicProgressStage.EstablishingBtConnection(1, 3)
         )
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.EstablishingBtConnection(1, 3), 0.0 / 4.0),
             progressReporter.progressFlow.value
         )
@@ -36,31 +36,31 @@ class ProgressReporterTest {
         progressReporter.setCurrentProgressStage(
             BasicProgressStage.EstablishingBtConnection(2, 3)
         )
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.EstablishingBtConnection(2, 3), 0.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.PerformingConnectionHandshake)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(1, 4, BasicProgressStage.PerformingConnectionHandshake, 1.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.ComboPairingKeyAndPinRequested)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(2, 4, BasicProgressStage.ComboPairingKeyAndPinRequested, 2.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.ComboPairingFinishing)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(3, 4, BasicProgressStage.ComboPairingFinishing, 3.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.Finished)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(4, 4, BasicProgressStage.Finished, 4.0 / 4.0),
             progressReporter.progressFlow.value
         )
@@ -68,7 +68,7 @@ class ProgressReporterTest {
 
     @Test
     fun testSkippedSteps() {
-        val progressReporter = ProgressReporter<Unit>(
+        val progressReporter = ProgressReporter(
             listOf(
                 BasicProgressStage.EstablishingBtConnection::class,
                 BasicProgressStage.PerformingConnectionHandshake::class,
@@ -78,7 +78,7 @@ class ProgressReporterTest {
             Unit
         )
 
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.Idle, 0.0),
             progressReporter.progressFlow.value
         )
@@ -86,19 +86,19 @@ class ProgressReporterTest {
         progressReporter.setCurrentProgressStage(
             BasicProgressStage.EstablishingBtConnection(1, 3)
         )
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.EstablishingBtConnection(1, 3), 0.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.ComboPairingFinishing)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(3, 4, BasicProgressStage.ComboPairingFinishing, 3.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.Finished)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(4, 4, BasicProgressStage.Finished, 4.0 / 4.0),
             progressReporter.progressFlow.value
         )
@@ -106,7 +106,7 @@ class ProgressReporterTest {
 
     @Test
     fun testBackwardsProgress() {
-        val progressReporter = ProgressReporter<Unit>(
+        val progressReporter = ProgressReporter(
             listOf(
                 BasicProgressStage.EstablishingBtConnection::class,
                 BasicProgressStage.PerformingConnectionHandshake::class,
@@ -116,13 +116,13 @@ class ProgressReporterTest {
             Unit
         )
 
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.Idle, 0.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.ComboPairingFinishing)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(3, 4, BasicProgressStage.ComboPairingFinishing, 3.0 / 4.0),
             progressReporter.progressFlow.value
         )
@@ -130,13 +130,13 @@ class ProgressReporterTest {
         progressReporter.setCurrentProgressStage(
             BasicProgressStage.EstablishingBtConnection(1, 3)
         )
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.EstablishingBtConnection(1, 3), 0.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.Finished)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(4, 4, BasicProgressStage.Finished, 4.0 / 4.0),
             progressReporter.progressFlow.value
         )
@@ -144,7 +144,7 @@ class ProgressReporterTest {
 
     @Test
     fun testAbort() {
-        val progressReporter = ProgressReporter<Unit>(
+        val progressReporter = ProgressReporter(
             listOf(
                 BasicProgressStage.EstablishingBtConnection::class,
                 BasicProgressStage.PerformingConnectionHandshake::class,
@@ -154,7 +154,7 @@ class ProgressReporterTest {
             Unit
         )
 
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.Idle, 0.0),
             progressReporter.progressFlow.value
         )
@@ -162,13 +162,13 @@ class ProgressReporterTest {
         progressReporter.setCurrentProgressStage(
             BasicProgressStage.EstablishingBtConnection(1, 3)
         )
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(0, 4, BasicProgressStage.EstablishingBtConnection(1, 3), 0.0 / 4.0),
             progressReporter.progressFlow.value
         )
 
         progressReporter.setCurrentProgressStage(BasicProgressStage.Cancelled)
-        assertEquals(
+        Assertions.assertEquals(
             ProgressReport(4, 4, BasicProgressStage.Cancelled, 4.0 / 4.0),
             progressReporter.progressFlow.value
         )

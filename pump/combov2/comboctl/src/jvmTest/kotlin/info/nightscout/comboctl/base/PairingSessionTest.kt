@@ -3,11 +3,10 @@ package info.nightscout.comboctl.base
 import info.nightscout.comboctl.base.testUtils.TestBluetoothDevice
 import info.nightscout.comboctl.base.testUtils.TestPumpStateStore
 import info.nightscout.comboctl.base.testUtils.runBlockingWithWatchdog
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.fail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class PairingSessionTest {
     enum class PacketDirection {
@@ -94,7 +93,7 @@ class PairingSessionTest {
                 System.err.println("Next sequence entry: $sequenceEntry")
 
                 val expectedPacketData = sequenceEntry.packet.toByteList()
-                assertEquals(expectedPacketData, dataToSend)
+                Assertions.assertEquals(expectedPacketData, dataToSend)
 
                 // Check if this is the last packet in the sequence.
                 // That's CTRL_DISCONNECT. If it is, switch to a
@@ -456,6 +455,6 @@ class PairingSessionTest {
         }
 
         if (testIO.testErrorOccurred)
-            fail("Failure in background coroutine")
+            Assertions.fail<String>("Failure in background coroutine")
     }
 }

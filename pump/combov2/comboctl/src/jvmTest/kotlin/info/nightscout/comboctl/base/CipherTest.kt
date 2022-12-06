@@ -1,8 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.text.Charsets
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class CipherTest {
     @Test
@@ -19,7 +18,7 @@ class CipherTest {
                 0xcd, 0xcc, 0xcb, 0xca
             )
             val actualWeakKey = generateWeakKeyFromPIN(PIN)
-            assertEquals(expectedWeakKey, actualWeakKey.toList())
+            Assertions.assertEquals(expectedWeakKey, actualWeakKey.toList())
         } catch (ex: Exception) {
             ex.printStackTrace()
             throw Error("Unexpected exception: $ex")
@@ -49,9 +48,9 @@ class CipherTest {
             0xfa, 0xeb, 0x31, 0xc8
         )
         val actualEncryptedData = cipher.encrypt(inputData)
-        assertEquals(expectedEncryptedData, actualEncryptedData.toList())
+        Assertions.assertEquals(expectedEncryptedData, actualEncryptedData.toList())
 
         val decryptedData = cipher.decrypt(actualEncryptedData)
-        assertEquals(inputData.toList(), decryptedData.toList())
+        Assertions.assertEquals(inputData.toList(), decryptedData.toList())
     }
 }

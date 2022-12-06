@@ -1,7 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class TwofishTest {
 
@@ -41,7 +41,7 @@ class TwofishTest {
 
         val keyObject = Twofish.processKey(key)
 
-        assertEquals(expectedSubKeys.toList(), keyObject.subKeys.toList())
+        Assertions.assertEquals(expectedSubKeys.toList(), keyObject.subKeys.toList())
     }
 
     @Test
@@ -324,10 +324,10 @@ class TwofishTest {
             val keyObject = Twofish.processKey(testVector.keyArray)
 
             val computedCiphertext = Twofish.blockEncrypt(testVector.plaintextArray, 0, keyObject)
-            assertEquals(testVector.ciphertextArray.toList(), computedCiphertext.toList())
+            Assertions.assertEquals(testVector.ciphertextArray.toList(), computedCiphertext.toList())
 
             val computedPlaintext = Twofish.blockDecrypt(testVector.ciphertextArray, 0, keyObject)
-            assertEquals(testVector.plaintextArray.toList(), computedPlaintext.toList())
+            Assertions.assertEquals(testVector.plaintextArray.toList(), computedPlaintext.toList())
         }
     }
 }

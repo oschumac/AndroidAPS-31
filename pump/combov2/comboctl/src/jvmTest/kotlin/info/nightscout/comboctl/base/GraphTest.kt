@@ -1,10 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class GraphTest {
     @Test
@@ -32,20 +29,20 @@ class GraphTest {
             n4.connectTo(n2, "e42")
 
             // Check number of nodes.
-            assertEquals(4, nodes.size)
+            Assertions.assertEquals(4, nodes.size)
 
             // Check number of edges per node.
-            assertEquals(1, n1.edges.size)
-            assertEquals(2, n2.edges.size)
-            assertEquals(1, n3.edges.size)
-            assertEquals(1, n4.edges.size)
+            Assertions.assertEquals(1, n1.edges.size)
+            Assertions.assertEquals(2, n2.edges.size)
+            Assertions.assertEquals(1, n3.edges.size)
+            Assertions.assertEquals(1, n4.edges.size)
 
             // Check the nodes the edges lead to.
-            assertSame(n2, n1.edges[0].targetNode)
-            assertSame(n1, n2.edges[0].targetNode)
-            assertSame(n3, n2.edges[1].targetNode)
-            assertSame(n4, n3.edges[0].targetNode)
-            assertSame(n2, n4.edges[0].targetNode)
+            Assertions.assertSame(n2, n1.edges[0].targetNode)
+            Assertions.assertSame(n1, n2.edges[0].targetNode)
+            Assertions.assertSame(n3, n2.edges[1].targetNode)
+            Assertions.assertSame(n4, n3.edges[0].targetNode)
+            Assertions.assertSame(n2, n4.edges[0].targetNode)
         }
     }
 
@@ -78,20 +75,20 @@ class GraphTest {
             n3.connectTo(n2, "e32")
 
             val pathFromN1ToN4 = findShortestPath(1, 4)!!
-            assertEquals(3, pathFromN1ToN4.size)
-            assertEquals("e12", pathFromN1ToN4[0].edgeValue)
-            assertEquals(2, pathFromN1ToN4[0].targetNodeValue)
-            assertEquals("e23", pathFromN1ToN4[1].edgeValue)
-            assertEquals(3, pathFromN1ToN4[1].targetNodeValue)
-            assertEquals("e34", pathFromN1ToN4[2].edgeValue)
-            assertEquals(4, pathFromN1ToN4[2].targetNodeValue)
+            Assertions.assertEquals(3, pathFromN1ToN4.size)
+            Assertions.assertEquals("e12", pathFromN1ToN4[0].edgeValue)
+            Assertions.assertEquals(2, pathFromN1ToN4[0].targetNodeValue)
+            Assertions.assertEquals("e23", pathFromN1ToN4[1].edgeValue)
+            Assertions.assertEquals(3, pathFromN1ToN4[1].targetNodeValue)
+            Assertions.assertEquals("e34", pathFromN1ToN4[2].edgeValue)
+            Assertions.assertEquals(4, pathFromN1ToN4[2].targetNodeValue)
 
             val pathFromN4ToN1 = findShortestPath(4, 1)!!
-            assertEquals(2, pathFromN4ToN1.size)
-            assertEquals("e42", pathFromN4ToN1[0].edgeValue)
-            assertEquals(2, pathFromN4ToN1[0].targetNodeValue)
-            assertEquals("e21", pathFromN4ToN1[1].edgeValue)
-            assertEquals(1, pathFromN4ToN1[1].targetNodeValue)
+            Assertions.assertEquals(2, pathFromN4ToN1.size)
+            Assertions.assertEquals("e42", pathFromN4ToN1[0].edgeValue)
+            Assertions.assertEquals(2, pathFromN4ToN1[0].targetNodeValue)
+            Assertions.assertEquals("e21", pathFromN4ToN1[1].edgeValue)
+            Assertions.assertEquals(1, pathFromN4ToN1[1].targetNodeValue)
         }
     }
 
@@ -114,13 +111,13 @@ class GraphTest {
             n1.connectTo(n3, "e13")
 
             val path = findShortestPath(2, 3)
-            assertNull(path)
+            Assertions.assertNull(path)
         }
     }
 
     @Test
     fun checkShortestPathSearchEdgePredicate() {
-        // Check the effect of an edge predicate. Establisch a small
+        // Check the effect of an edge predicate. Establish a small
         // 3-node graph with nodes 1,2,3 and add a shortcut from
         // node 1 to node 3. Try to find the shortest path from
         // 1 to 3, without and with a predicate. We expect the
@@ -136,18 +133,18 @@ class GraphTest {
             n1.connectTo(n3, "e13")
 
             val pathWithoutPredicate = findShortestPath(1, 3)
-            assertNotNull(pathWithoutPredicate)
-            assertEquals(1, pathWithoutPredicate.size)
-            assertEquals("e13", pathWithoutPredicate[0].edgeValue)
-            assertEquals(3, pathWithoutPredicate[0].targetNodeValue)
+            Assertions.assertNotNull(pathWithoutPredicate)
+            Assertions.assertEquals(1, pathWithoutPredicate?.size)
+            Assertions.assertEquals("e13", pathWithoutPredicate!![0].edgeValue)
+            Assertions.assertEquals(3, pathWithoutPredicate[0].targetNodeValue)
 
             val pathWithPredicate = findShortestPath(1, 3) { it != "e13" }
-            assertNotNull(pathWithPredicate)
-            assertEquals(2, pathWithPredicate.size)
-            assertEquals("e12", pathWithPredicate[0].edgeValue)
-            assertEquals(2, pathWithPredicate[0].targetNodeValue)
-            assertEquals("e23", pathWithPredicate[1].edgeValue)
-            assertEquals(3, pathWithPredicate[1].targetNodeValue)
+            Assertions.assertNotNull(pathWithPredicate)
+            Assertions.assertEquals(2, pathWithPredicate?.size)
+            Assertions.assertEquals("e12", pathWithPredicate!![0].edgeValue)
+            Assertions.assertEquals(2, pathWithPredicate[0].targetNodeValue)
+            Assertions.assertEquals("e23", pathWithPredicate[1].edgeValue)
+            Assertions.assertEquals(3, pathWithPredicate[1].targetNodeValue)
         }
     }
 }

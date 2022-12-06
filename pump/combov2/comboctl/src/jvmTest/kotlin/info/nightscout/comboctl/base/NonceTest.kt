@@ -1,7 +1,7 @@
 package info.nightscout.comboctl.base
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class NonceTest {
     @Test
@@ -12,7 +12,7 @@ class NonceTest {
         val secondNonce = firstNonce.getIncrementedNonce()
         val expectedSecondNonce = Nonce(listOf(0x11, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00))
 
-        assertEquals(expectedSecondNonce, secondNonce)
+        Assertions.assertEquals(expectedSecondNonce, secondNonce)
     }
 
     @Test
@@ -23,7 +23,7 @@ class NonceTest {
         val secondNonce = firstNonce.getIncrementedNonce(incrementAmount = 76000)
         val expectedSecondNonce = Nonce(listOf(0xF0.toByte(), 0x29, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00))
 
-        assertEquals(expectedSecondNonce, secondNonce)
+        Assertions.assertEquals(expectedSecondNonce, secondNonce)
     }
 
     @Test
@@ -38,6 +38,6 @@ class NonceTest {
         val secondNonce = firstNonce.getIncrementedNonce(incrementAmount = 10)
         val expectedSecondNonce = Nonce(listOf(0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00))
 
-        assertEquals(expectedSecondNonce, secondNonce)
+        Assertions.assertEquals(expectedSecondNonce, secondNonce)
     }
 }

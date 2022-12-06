@@ -2,12 +2,10 @@ package info.nightscout.comboctl.parser
 
 import info.nightscout.comboctl.base.DisplayFrame
 import info.nightscout.comboctl.base.timeWithoutDate
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class ParserTest {
     class TestContext(displayFrame: DisplayFrame, tokenOffset: Int, skipTitleString: Boolean = false, parseTopLeftTime: Boolean = false) {
@@ -35,7 +33,7 @@ class ParserTest {
 
         val testContext = TestContext(testFrameQuickinfoMainScreen, 9)
         val result = SingleGlyphParser(Glyph.LargeSymbol(LargeSymbol.RESERVOIR_FULL)).parse(testContext.parseContext)
-        assertEquals(ParseResult.NoValue::class, result::class)
+        Assertions.assertEquals(ParseResult.NoValue::class, result::class)
     }
 
     fun checkSingleGlyphTypeParser() {
@@ -49,64 +47,64 @@ class ParserTest {
 
         val testContext = TestContext(testFrameQuickinfoMainScreen, 9)
         val result = SingleGlyphTypeParser(Glyph.LargeSymbol::class).parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(LargeSymbol.RESERVOIR_FULL, ((result as ParseResult.Value<*>).value as Glyph.LargeSymbol).symbol)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(LargeSymbol.RESERVOIR_FULL, ((result as ParseResult.Value<*>).value as Glyph.LargeSymbol).symbol)
     }
 
     @Test
     fun checkTitleStringParser() {
         val testContext = TestContext(testFrameQuickinfoMainScreen, 0)
         val result = StringParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals("QUICK INFO", (result as ParseResult.Value<*>).value as String)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals("QUICK INFO", (result as ParseResult.Value<*>).value as String)
     }
 
     @Test
     fun checkIntegerParser() {
         val testContext = TestContext(testFrameQuickinfoMainScreen, 10)
         val result = IntegerParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(213, (result as ParseResult.Value<*>).value as Int)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(213, (result as ParseResult.Value<*>).value as Int)
     }
 
     @Test
     fun checkDecimalParser() {
         val testContext = TestContext(testFrameBasalRateTotalScreen1, 15)
         val result = DecimalParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(56970, (result as ParseResult.Value<*>).value as Int)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(56970, (result as ParseResult.Value<*>).value as Int)
     }
 
     @Test
     fun checkDateUSParser() {
         val testContext = TestContext(testUSDateFormatScreen, 20)
         val result = DateParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(LocalDate(year = 2011, monthNumber = 2, dayOfMonth = 3), (result as ParseResult.Value<*>).value as LocalDate)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(LocalDate(year = 2011, monthNumber = 2, dayOfMonth = 3), (result as ParseResult.Value<*>).value as LocalDate)
     }
 
     @Test
     fun checkDateEUParser() {
         val testContext = TestContext(testEUDateFormatScreen, 20)
         val result = DateParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(LocalDate(year = 2011, monthNumber = 2, dayOfMonth = 3), (result as ParseResult.Value<*>).value as LocalDate)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(LocalDate(year = 2011, monthNumber = 2, dayOfMonth = 3), (result as ParseResult.Value<*>).value as LocalDate)
     }
 
     @Test
     fun checkTime12HrParser() {
         val testContext = TestContext(testTimeAndDateSettingsHour12hFormatScreen, 8)
         val result = TimeParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(timeWithoutDate(hour = 20, minute = 34), (result as ParseResult.Value<*>).value as LocalDateTime)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(timeWithoutDate(hour = 20, minute = 34), (result as ParseResult.Value<*>).value as LocalDateTime)
     }
 
     @Test
     fun checkTime24HrParser() {
         val testContext = TestContext(testTimeAndDateSettingsHour24hFormatScreen, 9)
         val result = TimeParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(timeWithoutDate(hour = 10, minute = 22), (result as ParseResult.Value<*>).value as LocalDateTime)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(timeWithoutDate(hour = 10, minute = 22), (result as ParseResult.Value<*>).value as LocalDateTime)
     }
 
     @Test
@@ -122,8 +120,8 @@ class ParserTest {
             SingleGlyphTypeParser(Glyph.SmallDigit::class)
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
-        assertEquals(1, ((result as ParseResult.Value<*>).value as Glyph.SmallDigit).digit)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(1, ((result as ParseResult.Value<*>).value as Glyph.SmallDigit).digit)
     }
 
     @Test
@@ -141,7 +139,7 @@ class ParserTest {
             SingleGlyphTypeParser(Glyph.SmallSymbol::class)
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Null::class, result::class)
+        Assertions.assertEquals(ParseResult.Null::class, result::class)
     }
 
     @Test
@@ -168,12 +166,12 @@ class ParserTest {
             )
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Sequence::class, result::class)
+        Assertions.assertEquals(ParseResult.Sequence::class, result::class)
         val sequence = result as ParseResult.Sequence
-        assertEquals(3, sequence.values.size)
-        assertEquals(timeWithoutDate(hour = 10, minute = 20), sequence.valueAt(0))
-        assertEquals(Glyph.LargeSymbol(LargeSymbol.BASAL), sequence.valueAt(1))
-        assertEquals(200, sequence.valueAt(2))
+        Assertions.assertEquals(3, sequence.values.size)
+        Assertions.assertEquals(timeWithoutDate(hour = 10, minute = 20), sequence.valueAt(0))
+        Assertions.assertEquals(Glyph.LargeSymbol(LargeSymbol.BASAL), sequence.valueAt(1))
+        Assertions.assertEquals(200, sequence.valueAt(2))
     }
 
     @Test
@@ -188,12 +186,12 @@ class ParserTest {
             )
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Sequence::class, result::class)
+        Assertions.assertEquals(ParseResult.Sequence::class, result::class)
         val sequence = result as ParseResult.Sequence
-        assertEquals(3, sequence.values.size)
-        assertEquals("STUNDE", result.valueAt<String>(0))
-        assertEquals(10, result.valueAt<Int>(1))
-        assertEquals(timeWithoutDate(hour = 10, minute = 22), result.valueAt<LocalDateTime>(2))
+        Assertions.assertEquals(3, sequence.values.size)
+        Assertions.assertEquals("STUNDE", result.valueAt<String>(0))
+        Assertions.assertEquals(10, result.valueAt<Int>(1))
+        Assertions.assertEquals(timeWithoutDate(hour = 10, minute = 22), result.valueAt<LocalDateTime>(2))
     }
 
     @Test
@@ -214,13 +212,13 @@ class ParserTest {
             )
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Sequence::class, result::class)
+        Assertions.assertEquals(ParseResult.Sequence::class, result::class)
         val sequence = result as ParseResult.Sequence
-        assertEquals(4, sequence.values.size)
-        assertEquals("STUNDE", sequence.valueAt(0))
-        assertEquals(10, sequence.valueAt(1))
-        assertEquals(null, result.valueAtOrNull<String>(2))
-        assertEquals(timeWithoutDate(hour = 10, minute = 22), sequence.valueAt(3))
+        Assertions.assertEquals(4, sequence.values.size)
+        Assertions.assertEquals("STUNDE", sequence.valueAt(0))
+        Assertions.assertEquals(10, sequence.valueAt(1))
+        Assertions.assertEquals(null, result.valueAtOrNull<String>(2))
+        Assertions.assertEquals(timeWithoutDate(hour = 10, minute = 22), sequence.valueAt(3))
     }
 
     @Test
@@ -241,13 +239,13 @@ class ParserTest {
             )
         ).parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Sequence::class, result::class)
+        Assertions.assertEquals(ParseResult.Sequence::class, result::class)
         val sequence = result as ParseResult.Sequence
-        assertEquals(4, sequence.values.size)
-        assertEquals("HOUR", sequence.valueAt(0))
-        assertEquals(8, sequence.valueAt(1))
-        assertEquals("PM", sequence.valueAtOrNull(2))
-        assertEquals(timeWithoutDate(hour = 20, minute = 34), sequence.valueAt(3))
+        Assertions.assertEquals(4, sequence.values.size)
+        Assertions.assertEquals("HOUR", sequence.valueAt(0))
+        Assertions.assertEquals(8, sequence.valueAt(1))
+        Assertions.assertEquals("PM", sequence.valueAtOrNull(2))
+        Assertions.assertEquals(timeWithoutDate(hour = 20, minute = 34), sequence.valueAt(3))
     }
 
     // Tests for screen parsing
@@ -262,9 +260,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithTimeSeparator, 1, parseTopLeftTime = true)
         val result = NormalMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Normal(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 activeBasalProfileNumber = 1,
@@ -280,9 +278,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithoutTimeSeparator, 1, parseTopLeftTime = true)
         val result = NormalMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Normal(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 activeBasalProfileNumber = 1,
@@ -298,9 +296,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithTbrInfo, 1, parseTopLeftTime = true)
         val result = TbrMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Tbr(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingTbrDurationInMinutes = 30,
@@ -322,9 +320,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWith90TbrInfo, 1, parseTopLeftTime = true)
         val result = TbrMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Tbr(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingTbrDurationInMinutes = 5,
@@ -342,9 +340,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenStoppedWithTimeSeparator, 1, parseTopLeftTime = true)
         val result = StoppedMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Stopped(
                 currentDateTime = LocalDateTime(
                     year = 0,
@@ -365,9 +363,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenStoppedWithoutTimeSeparator, 1, parseTopLeftTime = true)
         val result = StoppedMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Stopped(
                 currentDateTime = LocalDateTime(
                     year = 0,
@@ -388,9 +386,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithNoBattery, 1, parseTopLeftTime = true)
         val result = StoppedMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Stopped(
                 currentDateTime = LocalDateTime(
                     year = 0,
@@ -411,9 +409,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithLowBattery, 1, parseTopLeftTime = true)
         val result = NormalMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Normal(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 activeBasalProfileNumber = 1,
@@ -429,9 +427,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenStoppedWithLowBattery, 1, parseTopLeftTime = true)
         val result = StoppedMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Stopped(
                 currentDateTime = LocalDateTime(
                     year = 0,
@@ -452,9 +450,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWith90TbrInfoAndLowBattery, 1, parseTopLeftTime = true)
         val result = TbrMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.Tbr(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingTbrDurationInMinutes = 15,
@@ -472,9 +470,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithExtendedBolusInfo, 1, parseTopLeftTime = true)
         val result = ExtendedAndMultiwaveBolusMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.ExtendedOrMultiwaveBolus(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingBolusDurationInMinutes = 3 * 60 + 0,
@@ -493,9 +491,9 @@ class ParserTest {
     fun checkExtendedBolusWithTbrMainScreenParsing() {
         val testContext = TestContext(testFrameMainScreenWithExtendedBolusInfoAndTbr, 1, parseTopLeftTime = true)
         val result = ExtendedAndMultiwaveBolusMainScreenParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.ExtendedOrMultiwaveBolus(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingBolusDurationInMinutes = 1 * 60 + 31,
@@ -515,9 +513,9 @@ class ParserTest {
         val testContext = TestContext(testFrameMainScreenWithMultiwaveBolusInfo, 1, parseTopLeftTime = true)
         val result = ExtendedAndMultiwaveBolusMainScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.MainScreen
-        assertEquals(
+        Assertions.assertEquals(
             MainScreenContent.ExtendedOrMultiwaveBolus(
                 currentTime = testContext.parseContext.topLeftTime!!,
                 remainingBolusDurationInMinutes = 1 * 60 + 30,
@@ -558,9 +556,9 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0)
             val result = MenuScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 
@@ -574,9 +572,9 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0, skipTitleString = true)
             val result = BasalRateTotalScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.BasalRateTotalScreen
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 
@@ -650,10 +648,10 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 1, parseTopLeftTime = true)
             val result = BasalRateFactorSettingScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.BasalRateFactorSettingScreen
-            assertEquals(testScreen.second.numUnits == null, screen.isBlinkedOut)
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second.numUnits == null, screen.isBlinkedOut)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 
@@ -662,9 +660,9 @@ class ParserTest {
         val testContext = TestContext(testFrameQuickinfoMainScreen, 0, skipTitleString = true)
         val result = QuickinfoScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen
-        assertEquals(
+        Assertions.assertEquals(
             ParsedScreen.QuickinfoMainScreen(
                 Quickinfo(availableUnits = 213, reservoirState = ReservoirState.FULL)
             ),
@@ -677,9 +675,9 @@ class ParserTest {
         val testContext = TestContext(testFrameW6CancelTbrWarningScreen, 0, skipTitleString = true)
         val result = AlertScreenParser().parse(testContext.parseContext)
 
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val alertScreen = (result as ParseResult.Value<*>).value as ParsedScreen.AlertScreen
-        assertEquals(AlertScreenContent.Warning(6), alertScreen.content)
+        Assertions.assertEquals(AlertScreenContent.Warning(6), alertScreen.content)
     }
 
     @Test
@@ -694,9 +692,9 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0, skipTitleString = true)
             val result = AlertScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.AlertScreen
-            assertEquals(testScreen.second, screen.content)
+            Assertions.assertEquals(testScreen.second, screen.content)
         }
     }
 
@@ -710,9 +708,9 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0, skipTitleString = true)
             val result = AlertScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.AlertScreen
-            assertEquals(testScreen.second, screen.content)
+            Assertions.assertEquals(testScreen.second, screen.content)
         }
     }
 
@@ -747,10 +745,10 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0, skipTitleString = true)
             val result = TemporaryBasalRatePercentageScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.TemporaryBasalRatePercentageScreen
-            assertEquals(testScreen.second == null, screen.isBlinkedOut)
-            assertEquals(testScreen.second, screen.percentage)
+            Assertions.assertEquals(testScreen.second == null, screen.isBlinkedOut)
+            Assertions.assertEquals(testScreen.second, screen.percentage)
         }
     }
 
@@ -758,11 +756,11 @@ class ParserTest {
     fun checkTemporaryBasalRatePercentageScreenPercentAndDurationParsing() {
         val testContext = TestContext(testFrameTemporaryBasalRatePercentage110Screen, 0, skipTitleString = true)
         val result = TemporaryBasalRatePercentageScreenParser().parse(testContext.parseContext)
-        assertEquals(ParseResult.Value::class, result::class)
+        Assertions.assertEquals(ParseResult.Value::class, result::class)
         val screen = (result as ParseResult.Value<*>).value as ParsedScreen.TemporaryBasalRatePercentageScreen
-        assertEquals(false, screen.isBlinkedOut)
-        assertEquals(110, screen.percentage)
-        assertEquals(30, screen.remainingDurationInMinutes)
+        Assertions.assertEquals(false, screen.isBlinkedOut)
+        Assertions.assertEquals(110, screen.percentage)
+        Assertions.assertEquals(30, screen.remainingDurationInMinutes)
     }
 
     @Test
@@ -794,10 +792,10 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0, skipTitleString = true)
             val result = TemporaryBasalRateDurationScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen.TemporaryBasalRateDurationScreen
-            assertEquals(testScreen.second == null, screen.isBlinkedOut)
-            assertEquals(testScreen.second, screen.durationInMinutes)
+            Assertions.assertEquals(testScreen.second == null, screen.isBlinkedOut)
+            Assertions.assertEquals(testScreen.second, screen.durationInMinutes)
         }
     }
 
@@ -938,12 +936,12 @@ class ParserTest {
 
             val titleString = (StringParser().parse(testContext.parseContext) as ParseResult.Value<*>).value as String
             val titleId = knownScreenTitles[titleString]
-            assertNotNull(titleId)
+            Assertions.assertNotNull(titleId)
 
-            val result = TimeAndDateSettingsScreenParser(titleId).parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            val result = TimeAndDateSettingsScreenParser(titleId!!).parse(testContext.parseContext)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 
@@ -1577,7 +1575,7 @@ class ParserTest {
 
             val titleString = (StringParser().parse(testContext.parseContext) as ParseResult.Value<*>).value as String
             val titleId = knownScreenTitles[titleString]
-            assertNotNull(titleId)
+            Assertions.assertNotNull(titleId)
 
             val result: ParseResult = when (titleId) {
                 TitleID.BOLUS_DATA -> MyDataBolusDataScreenParser().parse(testContext.parseContext)
@@ -1585,13 +1583,13 @@ class ParserTest {
                 TitleID.DAILY_TOTALS -> MyDataDailyTotalsScreenParser().parse(testContext.parseContext)
                 TitleID.TBR_DATA -> MyDataTbrDataScreenParser().parse(testContext.parseContext)
                 else -> {
-                    fail("Unknown title string \"$titleString\"")
+                    Assertions.fail("Unknown title string \"$titleString\"")
                 }
             }
 
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 
@@ -1621,9 +1619,9 @@ class ParserTest {
         for (testScreen in testScreens) {
             val testContext = TestContext(testScreen.first, 0)
             val result = ToplevelScreenParser().parse(testContext.parseContext)
-            assertEquals(ParseResult.Value::class, result::class)
+            Assertions.assertEquals(ParseResult.Value::class, result::class)
             val screen = (result as ParseResult.Value<*>).value as ParsedScreen
-            assertEquals(testScreen.second, screen)
+            Assertions.assertEquals(testScreen.second, screen)
         }
     }
 }

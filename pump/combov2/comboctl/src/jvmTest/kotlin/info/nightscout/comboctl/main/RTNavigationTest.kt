@@ -13,13 +13,6 @@ import info.nightscout.comboctl.parser.MainScreenContent
 import info.nightscout.comboctl.parser.ParsedScreen
 import info.nightscout.comboctl.parser.Quickinfo
 import info.nightscout.comboctl.parser.ReservoirState
-import kotlin.reflect.KClassifier
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -28,8 +21,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
-import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import kotlin.reflect.KClassifier
 
 class RTNavigationTest {
     /* RTNavigationContext implementation for testing out RTNavigation functionality.
@@ -56,6 +52,7 @@ class RTNavigationTest {
         testParsedScreenList: List<ParsedScreen>,
         private val automaticallyAdvanceScreens: Boolean = false
     ) : RTNavigationContext {
+
         private val mainJob = SupervisorJob()
         private val mainScope = CoroutineScope(mainJob)
         private val testParsedScreenListIter = testParsedScreenList.listIterator()
@@ -151,6 +148,7 @@ class RTNavigationTest {
     }
 
     companion object {
+
         @BeforeAll
         @JvmStatic
         fun commonInit() {
@@ -173,7 +171,7 @@ class RTNavigationTest {
                     continue
 
                 val path = rtNavigationGraph.findShortestPath(nodeA, nodeB)
-                assertTrue(path!!.isNotEmpty())
+                Assertions.assertTrue(path!!.isNotEmpty())
             }
         }
     }
@@ -186,18 +184,33 @@ class RTNavigationTest {
             isComboStopped = false
         )
 
-        assertNotNull(path)
-        assertEquals(5, path.size)
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.TemporaryBasalRateMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[0])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.MyDataMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[1])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRate1ProgrammingMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[2])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRateTotalScreen::class, RTEdgeValue(RTNavigationButton.CHECK)), path[3])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRateFactorSettingScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[4])
+        Assertions.assertNotNull(path)
+        Assertions.assertEquals(5, path?.size)
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.TemporaryBasalRateMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path!![0]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.MyDataMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path[1]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRate1ProgrammingMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path[2]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRateTotalScreen::class, RTEdgeValue(RTNavigationButton.CHECK)
+            ), path[3]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRateFactorSettingScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path[4]
+        )
     }
 
     @Test
@@ -212,16 +225,28 @@ class RTNavigationTest {
             isComboStopped = true
         )
 
-        assertNotNull(path)
-        assertEquals(4, path.size)
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.MyDataMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[0])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRate1ProgrammingMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[1])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRateTotalScreen::class, RTEdgeValue(RTNavigationButton.CHECK)), path[2])
-        assertEquals(PathSegment<KClassifier, RTEdgeValue>(
-            ParsedScreen.BasalRateFactorSettingScreen::class, RTEdgeValue(RTNavigationButton.MENU)), path[3])
+        Assertions.assertNotNull(path)
+        Assertions.assertEquals(4, path?.size)
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.MyDataMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path!![0]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRate1ProgrammingMenuScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path[1]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRateTotalScreen::class, RTEdgeValue(RTNavigationButton.CHECK)
+            ), path[2]
+        )
+        Assertions.assertEquals(
+            PathSegment<KClassifier, RTEdgeValue>(
+                ParsedScreen.BasalRateFactorSettingScreen::class, RTEdgeValue(RTNavigationButton.MENU)
+            ), path[3]
+        )
     }
 
     @Test
@@ -241,7 +266,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((130 - 100) / 3, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((130 - 100) / 3, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 4000,
@@ -251,7 +276,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((4000 - 60) / 20, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair((4000 - 60) / 20, RTNavigationButton.DOWN), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 10,
@@ -261,7 +286,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((20 - 10) / 1, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((20 - 10) / 1, RTNavigationButton.UP), result)
 
         // Tests that the cyclic quantity range is respected.
         // In this case, a wrap-around is expected to be preferred
@@ -274,7 +299,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(((60 - 50) + (10 - 0)) / 1, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair(((60 - 50) + (10 - 0)) / 1, RTNavigationButton.DOWN), result)
 
         // Another cyclic quantity range test with a wrap around,
         // this time from the other direction (wrapping around
@@ -287,7 +312,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(3, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair(3, RTNavigationButton.UP), result)
 
         // Additional test to check that cyclic ranges are handled correctly
         // even if currentQuantity is slightly higher than targetQuantity. This
@@ -300,7 +325,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(1, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair(1, RTNavigationButton.DOWN), result)
 
         // Test that computeShortRTButtonPress() can correctly handle start
         // quantities that aren't an integer multiple of the step size. The
@@ -314,7 +339,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(1, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair(1, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 25,
@@ -324,7 +349,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(2, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair(2, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 35,
@@ -334,7 +359,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(1, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair(1, RTNavigationButton.DOWN), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 55,
@@ -344,7 +369,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(2, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair(2, RTNavigationButton.DOWN), result)
 
         // Corner case: current and target quantity are the same. In this case,
         // no RT button would actually be pressed, but the button value in the
@@ -359,7 +384,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair(0, RTNavigationButton.CHECK), result)
+        Assertions.assertEquals(Pair(0, RTNavigationButton.CHECK), result)
 
     }
 
@@ -380,7 +405,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((150 - 100) / 10, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((150 - 100) / 10, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 1000,
@@ -390,7 +415,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((1100 - 1000) / 50, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((1100 - 1000) / 50, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 900,
@@ -400,7 +425,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((1000 - 900) / 10 + (1050 - 1000) / 50, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((1000 - 900) / 10 + (1050 - 1000) / 50, RTNavigationButton.UP), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 300,
@@ -410,7 +435,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((300 - 230) / 10, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair((300 - 230) / 10, RTNavigationButton.DOWN), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 1200,
@@ -420,7 +445,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((1200 - 1000) / 50, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair((1200 - 1000) / 50, RTNavigationButton.DOWN), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 1100,
@@ -430,7 +455,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((1000 - 970) / 10 + (1100 - 1000) / 50, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair((1000 - 970) / 10 + (1100 - 1000) / 50, RTNavigationButton.DOWN), result)
     }
 
     @Test
@@ -450,7 +475,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((1000 - 710) / 10 + (7900 - 1000) / 50, RTNavigationButton.DOWN), result)
+        Assertions.assertEquals(Pair((1000 - 710) / 10 + (7900 - 1000) / 50, RTNavigationButton.DOWN), result)
 
         result = computeShortRTButtonPress(
             currentQuantity = 0,
@@ -460,7 +485,7 @@ class RTNavigationTest {
             incrementButton = RTNavigationButton.UP,
             decrementButton = RTNavigationButton.DOWN
         )
-        assertEquals(Pair((50 - 0) / 50 + (1000 - 50) / 10 + (1100 - 1000) / 50, RTNavigationButton.UP), result)
+        Assertions.assertEquals(Pair((50 - 0) / 50 + (1000 - 50) / 10 + (1100 - 1000) / 50, RTNavigationButton.UP), result)
     }
 
     @Test
@@ -471,15 +496,19 @@ class RTNavigationTest {
         // the latter case, the watchdog will eventually cancel the
         // coroutine and report the test as failed.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.QuickinfoMainScreen(Quickinfo(availableUnits = 105, reservoirState = ReservoirState.FULL))
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.QuickinfoMainScreen(Quickinfo(availableUnits = 105, reservoirState = ReservoirState.FULL))
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             navigateToRTScreen(rtNavigationContext, ParsedScreen.QuickinfoMainScreen::class, isComboStopped = false)
@@ -492,30 +521,36 @@ class RTNavigationTest {
         // otherwise the navigation may incorrectly press RT buttons more often
         // than necessary.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.TemporaryBasalRateMenuScreen,
-            ParsedScreen.TemporaryBasalRatePercentageScreen(percentage = 110, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(percentage = null, remainingDurationInMinutes = null),
-            ParsedScreen.TemporaryBasalRateDurationScreen(durationInMinutes = 45)
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.TemporaryBasalRateMenuScreen,
+                ParsedScreen.TemporaryBasalRatePercentageScreen(percentage = 110, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(percentage = null, remainingDurationInMinutes = null),
+                ParsedScreen.TemporaryBasalRateDurationScreen(durationInMinutes = 45)
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             navigateToRTScreen(rtNavigationContext, ParsedScreen.TemporaryBasalRateDurationScreen::class, isComboStopped = false)
         }
 
-        assertContentEquals(
-            listOf(
-                RTNavigationButton.MENU,
-                RTNavigationButton.CHECK,
-                RTNavigationButton.MENU
-            ),
-            rtNavigationContext.shortPressedRTButtons
+        val expectedShortRTButtonPressSequence = listOf(
+            RTNavigationButton.MENU,
+            RTNavigationButton.CHECK,
+            RTNavigationButton.MENU
+        )
+        Assertions.assertTrue(
+            expectedShortRTButtonPressSequence.size == rtNavigationContext.shortPressedRTButtons.size
+                && expectedShortRTButtonPressSequence.containsAll(rtNavigationContext.shortPressedRTButtons)
+                && rtNavigationContext.shortPressedRTButtons.containsAll(expectedShortRTButtonPressSequence)
         )
     }
 
@@ -524,14 +559,18 @@ class RTNavigationTest {
         // Check edge case handling when we want to navigate to
         // a target screen type, but we are in fact already there.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            ))
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                )
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             navigateToRTScreen(rtNavigationContext, ParsedScreen.MainScreen::class, isComboStopped = false)
@@ -542,29 +581,33 @@ class RTNavigationTest {
     fun checkRTNavigationFromMainScreenToBasalRateFactorSettingScreen() {
         // Check the result of a more complex navigation.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 23, minute = 11),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 800,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.StopPumpMenuScreen,
-            ParsedScreen.StandardBolusMenuScreen,
-            ParsedScreen.ExtendedBolusMenuScreen,
-            ParsedScreen.MultiwaveBolusMenuScreen,
-            ParsedScreen.TemporaryBasalRateMenuScreen,
-            ParsedScreen.MyDataMenuScreen,
-            ParsedScreen.BasalRateProfileSelectionMenuScreen,
-            ParsedScreen.BasalRate1ProgrammingMenuScreen,
-            ParsedScreen.BasalRateTotalScreen(1840, 1),
-            ParsedScreen.BasalRateFactorSettingScreen(
-                LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 0, minute = 0),
-                LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 1, minute = 0),
-                1000,
-                1
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 23, minute = 11),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 800,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.StopPumpMenuScreen,
+                ParsedScreen.StandardBolusMenuScreen,
+                ParsedScreen.ExtendedBolusMenuScreen,
+                ParsedScreen.MultiwaveBolusMenuScreen,
+                ParsedScreen.TemporaryBasalRateMenuScreen,
+                ParsedScreen.MyDataMenuScreen,
+                ParsedScreen.BasalRateProfileSelectionMenuScreen,
+                ParsedScreen.BasalRate1ProgrammingMenuScreen,
+                ParsedScreen.BasalRateTotalScreen(1840, 1),
+                ParsedScreen.BasalRateFactorSettingScreen(
+                    LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 0, minute = 0),
+                    LocalDateTime(year = 0, monthNumber = 1, dayOfMonth = 1, hour = 1, minute = 0),
+                    1000,
+                    1
+                )
             )
-        ))
+        )
 
         runBlockingWithWatchdog(6000) {
             val targetScreen = navigateToRTScreen(
@@ -572,7 +615,7 @@ class RTNavigationTest {
                 ParsedScreen.BasalRateFactorSettingScreen::class,
                 isComboStopped = false
             )
-            assertIs<ParsedScreen.BasalRateFactorSettingScreen>(targetScreen)
+            Assertions.assertTrue(targetScreen is ParsedScreen.BasalRateFactorSettingScreen)
         }
 
         // Navigation is done by pressing MENU 9 times until the basal rate
@@ -594,7 +637,11 @@ class RTNavigationTest {
             RTNavigationButton.MENU
         )
 
-        assertContentEquals(expectedShortRTButtonPressSequence, rtNavigationContext.shortPressedRTButtons)
+        Assertions.assertTrue(
+            expectedShortRTButtonPressSequence.size == rtNavigationContext.shortPressedRTButtons.size
+                && expectedShortRTButtonPressSequence.containsAll(rtNavigationContext.shortPressedRTButtons)
+                && rtNavigationContext.shortPressedRTButtons.containsAll(expectedShortRTButtonPressSequence)
+        )
     }
 
     @Test
@@ -610,25 +657,31 @@ class RTNavigationTest {
         // second TBR main screen is skipped by the detection). Without
         // the screen type check, it would press CHECK _twice_.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Tbr(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                remainingTbrDurationInMinutes = 28,
-                tbrPercentage = 110,
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.MainScreen(MainScreenContent.Tbr(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                remainingTbrDurationInMinutes = 27,
-                tbrPercentage = 110,
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.QuickinfoMainScreen(Quickinfo(availableUnits = 105, reservoirState = ReservoirState.FULL))
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Tbr(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        remainingTbrDurationInMinutes = 28,
+                        tbrPercentage = 110,
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Tbr(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        remainingTbrDurationInMinutes = 27,
+                        tbrPercentage = 110,
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.QuickinfoMainScreen(Quickinfo(availableUnits = 105, reservoirState = ReservoirState.FULL))
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             navigateToRTScreen(rtNavigationContext, ParsedScreen.QuickinfoMainScreen::class, isComboStopped = false)
@@ -638,7 +691,12 @@ class RTNavigationTest {
             RTNavigationButton.CHECK
         )
 
-        assertContentEquals(expectedShortRTButtonPressSequence, rtNavigationContext.shortPressedRTButtons)
+        //assertContentEquals(expectedShortRTButtonPressSequence, rtNavigationContext.shortPressedRTButtons)
+        Assertions.assertTrue(
+            expectedShortRTButtonPressSequence.size == rtNavigationContext.shortPressedRTButtons.size
+                && expectedShortRTButtonPressSequence.containsAll(rtNavigationContext.shortPressedRTButtons)
+                && rtNavigationContext.shortPressedRTButtons.containsAll(expectedShortRTButtonPressSequence)
+        )
     }
 
     @Test
@@ -650,19 +708,23 @@ class RTNavigationTest {
         // 4th one, which is the target. To test for "overshoots",
         // there's a 5th one after that.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.BasalRate1ProgrammingMenuScreen,
-            ParsedScreen.BasalRate2ProgrammingMenuScreen,
-            ParsedScreen.BasalRate3ProgrammingMenuScreen,
-            ParsedScreen.BasalRate4ProgrammingMenuScreen,
-            ParsedScreen.BasalRate5ProgrammingMenuScreen
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.BasalRate1ProgrammingMenuScreen,
+                ParsedScreen.BasalRate2ProgrammingMenuScreen,
+                ParsedScreen.BasalRate3ProgrammingMenuScreen,
+                ParsedScreen.BasalRate4ProgrammingMenuScreen,
+                ParsedScreen.BasalRate5ProgrammingMenuScreen
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             val finalScreen = longPressRTButtonUntil(rtNavigationContext, RTNavigationButton.MENU) { parsedScreen ->
@@ -671,7 +733,7 @@ class RTNavigationTest {
                 else
                     LongPressRTButtonsCommand.ContinuePressingButton
             }
-            assertIs<ParsedScreen.BasalRate4ProgrammingMenuScreen>(finalScreen)
+            Assertions.assertTrue(finalScreen is ParsedScreen.BasalRate4ProgrammingMenuScreen)
         }
     }
 
@@ -684,19 +746,23 @@ class RTNavigationTest {
         // 4th one, which is the target. To test for "overshoots",
         // there's a 5th one after that.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.BasalRate1ProgrammingMenuScreen,
-            ParsedScreen.BasalRate2ProgrammingMenuScreen,
-            ParsedScreen.BasalRate3ProgrammingMenuScreen,
-            ParsedScreen.BasalRate4ProgrammingMenuScreen,
-            ParsedScreen.BasalRate5ProgrammingMenuScreen
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.BasalRate1ProgrammingMenuScreen,
+                ParsedScreen.BasalRate2ProgrammingMenuScreen,
+                ParsedScreen.BasalRate3ProgrammingMenuScreen,
+                ParsedScreen.BasalRate4ProgrammingMenuScreen,
+                ParsedScreen.BasalRate5ProgrammingMenuScreen
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             val finalScreen = shortPressRTButtonsUntil(rtNavigationContext) { parsedScreen ->
@@ -705,7 +771,7 @@ class RTNavigationTest {
                 else
                     ShortPressRTButtonsCommand.PressButton(RTNavigationButton.MENU)
             }
-            assertIs<ParsedScreen.BasalRate4ProgrammingMenuScreen>(finalScreen)
+            Assertions.assertTrue(finalScreen is ParsedScreen.BasalRate4ProgrammingMenuScreen)
         }
     }
 
@@ -715,23 +781,27 @@ class RTNavigationTest {
         // screen in between. We except the long button press to be aborted
         // and an AlertScreenException to be thrown.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.BasalRate1ProgrammingMenuScreen,
-            ParsedScreen.BasalRate2ProgrammingMenuScreen,
-            ParsedScreen.AlertScreen(AlertScreenContent.Warning(code = 6)),
-            ParsedScreen.BasalRate3ProgrammingMenuScreen,
-            ParsedScreen.BasalRate4ProgrammingMenuScreen,
-            ParsedScreen.BasalRate5ProgrammingMenuScreen
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.BasalRate1ProgrammingMenuScreen,
+                ParsedScreen.BasalRate2ProgrammingMenuScreen,
+                ParsedScreen.AlertScreen(AlertScreenContent.Warning(code = 6)),
+                ParsedScreen.BasalRate3ProgrammingMenuScreen,
+                ParsedScreen.BasalRate4ProgrammingMenuScreen,
+                ParsedScreen.BasalRate5ProgrammingMenuScreen
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
-            val e = assertFailsWith<AlertScreenException> {
+            val e = assertThrows<AlertScreenException> {
                 // Keep long-pressing the button. Eventually, the W6 screen is received.
                 longPressRTButtonUntil(rtNavigationContext, RTNavigationButton.MENU) { parsedScreen ->
                     if (parsedScreen is ParsedScreen.BasalRate4ProgrammingMenuScreen)
@@ -740,8 +810,8 @@ class RTNavigationTest {
                         LongPressRTButtonsCommand.ContinuePressingButton
                 }
             }
-            assertIs<AlertScreenContent.Warning>(e.alertScreenContent)
-            assertEquals(6, (e.alertScreenContent as AlertScreenContent.Warning).code)
+            Assertions.assertTrue(e.alertScreenContent is AlertScreenContent.Warning)
+            Assertions.assertEquals(6, (e.alertScreenContent as AlertScreenContent.Warning).code)
             // Simulate a short RT button press that would be used after the exception
             // was thrown to dismiss the W6 warning. This also checks that the long
             // button press has been finished correctly; if not, this call may fail
@@ -757,19 +827,23 @@ class RTNavigationTest {
         // press MENU until it reaches basal rate programming screen 4
         // in our simulated sequence of screens.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.MainScreen(MainScreenContent.Normal(
-                currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
-                activeBasalProfileNumber = 1,
-                currentBasalRateFactor = 300,
-                batteryState = BatteryState.FULL_BATTERY
-            )),
-            ParsedScreen.BasalRate1ProgrammingMenuScreen,
-            ParsedScreen.BasalRate2ProgrammingMenuScreen,
-            ParsedScreen.BasalRate3ProgrammingMenuScreen,
-            ParsedScreen.BasalRate4ProgrammingMenuScreen,
-            ParsedScreen.BasalRate5ProgrammingMenuScreen
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.MainScreen(
+                    MainScreenContent.Normal(
+                        currentTime = LocalDateTime(year = 2020, monthNumber = 10, dayOfMonth = 4, hour = 0, minute = 0),
+                        activeBasalProfileNumber = 1,
+                        currentBasalRateFactor = 300,
+                        batteryState = BatteryState.FULL_BATTERY
+                    )
+                ),
+                ParsedScreen.BasalRate1ProgrammingMenuScreen,
+                ParsedScreen.BasalRate2ProgrammingMenuScreen,
+                ParsedScreen.BasalRate3ProgrammingMenuScreen,
+                ParsedScreen.BasalRate4ProgrammingMenuScreen,
+                ParsedScreen.BasalRate5ProgrammingMenuScreen
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             val finalScreen = cycleToRTScreen(
@@ -777,7 +851,7 @@ class RTNavigationTest {
                 RTNavigationButton.MENU,
                 ParsedScreen.BasalRate4ProgrammingMenuScreen::class
             )
-            assertIs<ParsedScreen.BasalRate4ProgrammingMenuScreen>(finalScreen)
+            Assertions.assertTrue(finalScreen is ParsedScreen.BasalRate4ProgrammingMenuScreen)
         }
     }
 
@@ -802,7 +876,7 @@ class RTNavigationTest {
                 rtNavigationContext,
                 ParsedScreen.BasalRate3ProgrammingMenuScreen::class
             )
-            assertIs<ParsedScreen.BasalRate3ProgrammingMenuScreen>(finalScreen)
+            Assertions.assertTrue(finalScreen is ParsedScreen.BasalRate3ProgrammingMenuScreen)
         }
     }
 
@@ -814,20 +888,22 @@ class RTNavigationTest {
         // expect adjustQuantityOnScreen() to catch this and correct it
         // using short RT button presses until the target quantity is observed.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.TemporaryBasalRatePercentageScreen(100, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(110, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(120, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(130, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(140, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(150, remainingDurationInMinutes = 30),
-            // No 160 quantity here, on purpose, to test overshoot handling
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30)
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.TemporaryBasalRatePercentageScreen(100, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(110, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(120, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(130, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(140, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(150, remainingDurationInMinutes = 30),
+                // No 160 quantity here, on purpose, to test overshoot handling
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30)
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             adjustQuantityOnScreen(
@@ -850,27 +926,29 @@ class RTNavigationTest {
         // to be thrown. Such a warning screen interrupts and aborts whatever operation we
         // were doing and returns the Combo back to the main screen.
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.TemporaryBasalRatePercentageScreen(100, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(110, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(120, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(130, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(140, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(150, remainingDurationInMinutes = 30),
-            // No 160 quantity here, on purpose, to test overshoot handling.
-            // During the screens below, short button presses will be used
-            // to fix the overshoot, so we place the W6 in between these
-            // to test that the AlertScreenException is correctly thrown
-            // while short-pressing the button.
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
-            ParsedScreen.AlertScreen(AlertScreenContent.Warning(code = 6)),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30),
-            ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30)
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.TemporaryBasalRatePercentageScreen(100, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(110, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(120, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(130, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(140, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(150, remainingDurationInMinutes = 30),
+                // No 160 quantity here, on purpose, to test overshoot handling.
+                // During the screens below, short button presses will be used
+                // to fix the overshoot, so we place the W6 in between these
+                // to test that the AlertScreenException is correctly thrown
+                // while short-pressing the button.
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(170, remainingDurationInMinutes = 30),
+                ParsedScreen.AlertScreen(AlertScreenContent.Warning(code = 6)),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30),
+                ParsedScreen.TemporaryBasalRatePercentageScreen(160, remainingDurationInMinutes = 30)
+            )
+        )
 
-        val e = assertFailsWith<AlertScreenException> {
+        val e = assertThrows<AlertScreenException> {
             runBlockingWithWatchdog(6000) {
                 adjustQuantityOnScreen(
                     rtNavigationContext,
@@ -883,8 +961,8 @@ class RTNavigationTest {
                 }
             }
         }
-        assertIs<AlertScreenContent.Warning>(e.alertScreenContent)
-        assertEquals(6, (e.alertScreenContent as AlertScreenContent.Warning).code)
+        Assertions.assertTrue(e.alertScreenContent is AlertScreenContent.Warning)
+        Assertions.assertEquals(6, (e.alertScreenContent as AlertScreenContent.Warning).code)
     }
 
     @Test
@@ -902,17 +980,19 @@ class RTNavigationTest {
         // without wraparound, it goes 58 -> 2 by decrementing, which
         // is a total distance of 55 steps.)
 
-        val rtNavigationContext = TestRTNavigationContext(listOf(
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(58),
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(59),
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(0),
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(1),
-            // No 2 quantity here, on purpose, to test overshoot handling
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(3),
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(2),
-            // This is a dummy screen to avoid an exception due to the next() call in TestRTNavigationContext.shortButtonPress()
-            ParsedScreen.TimeAndDateSettingsMinuteScreen(0)
-        ))
+        val rtNavigationContext = TestRTNavigationContext(
+            listOf(
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(58),
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(59),
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(0),
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(1),
+                // No 2 quantity here, on purpose, to test overshoot handling
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(3),
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(2),
+                // This is a dummy screen to avoid an exception due to the next() call in TestRTNavigationContext.shortButtonPress()
+                ParsedScreen.TimeAndDateSettingsMinuteScreen(0)
+            )
+        )
 
         runBlockingWithWatchdog(6000) {
             adjustQuantityOnScreen(

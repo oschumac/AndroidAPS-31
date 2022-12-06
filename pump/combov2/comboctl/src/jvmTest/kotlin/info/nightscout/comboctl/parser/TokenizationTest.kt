@@ -1,9 +1,7 @@
 package info.nightscout.comboctl.parser
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class TokenizationTest {
     @Test
@@ -20,14 +18,14 @@ class TokenizationTest {
             largeBasalGlyphPattern,
             0, 8
         )
-        assertTrue(result1)
+        Assertions.assertTrue(result1)
 
         val result2 = checkIfPatternMatchesAt(
             testFrameMainScreenWithTimeSeparator,
             largeBasalGlyphPattern,
             1, 8
         )
-        assertFalse(result2)
+        Assertions.assertFalse(result2)
     }
 
     @Test
@@ -44,28 +42,28 @@ class TokenizationTest {
 
         val tokens = findTokens(testFrameMainScreenWithTimeSeparator)
 
-        assertEquals(13, tokens.size)
+        Assertions.assertEquals(13, tokens.size)
 
         val iterator = tokens.iterator()
 
-        assertEquals(Glyph.SmallSymbol(SmallSymbol.CLOCK), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallSymbol(SmallSymbol.CLOCK), iterator.next().glyph)
 
-        assertEquals(Glyph.SmallDigit(1), iterator.next().glyph)
-        assertEquals(Glyph.SmallDigit(0), iterator.next().glyph)
-        assertEquals(Glyph.SmallSymbol(SmallSymbol.SEPARATOR), iterator.next().glyph)
-        assertEquals(Glyph.SmallDigit(2), iterator.next().glyph)
-        assertEquals(Glyph.SmallDigit(0), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallDigit(1), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallDigit(0), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallSymbol(SmallSymbol.SEPARATOR), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallDigit(2), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallDigit(0), iterator.next().glyph)
 
-        assertEquals(Glyph.LargeSymbol(LargeSymbol.BASAL), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeSymbol(LargeSymbol.BASAL), iterator.next().glyph)
 
-        assertEquals(Glyph.LargeDigit(0), iterator.next().glyph)
-        assertEquals(Glyph.LargeSymbol(LargeSymbol.DOT), iterator.next().glyph)
-        assertEquals(Glyph.LargeDigit(2), iterator.next().glyph)
-        assertEquals(Glyph.LargeDigit(0), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeDigit(0), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeSymbol(LargeSymbol.DOT), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeDigit(2), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeDigit(0), iterator.next().glyph)
 
-        assertEquals(Glyph.LargeSymbol(LargeSymbol.UNITS_PER_HOUR), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeSymbol(LargeSymbol.UNITS_PER_HOUR), iterator.next().glyph)
 
-        assertEquals(Glyph.SmallDigit(1), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallDigit(1), iterator.next().glyph)
     }
 
     @Test
@@ -81,24 +79,24 @@ class TokenizationTest {
 
         val tokens = findTokens(testFrameStandardBolusMenuScreen)
 
-        assertEquals(14, tokens.size)
+        Assertions.assertEquals(14, tokens.size)
 
         val iterator = tokens.iterator()
 
-        assertEquals(Glyph.SmallCharacter('S'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('T'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('A'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('N'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('D'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('A'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('R'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('D'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('B'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('O'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('L'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('U'), iterator.next().glyph)
-        assertEquals(Glyph.SmallCharacter('S'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('S'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('T'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('A'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('N'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('D'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('A'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('R'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('D'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('B'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('O'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('L'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('U'), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.SmallCharacter('S'), iterator.next().glyph)
 
-        assertEquals(Glyph.LargeSymbol(LargeSymbol.BOLUS), iterator.next().glyph)
+        Assertions.assertEquals(Glyph.LargeSymbol(LargeSymbol.BOLUS), iterator.next().glyph)
     }
 }

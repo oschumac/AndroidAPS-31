@@ -7,12 +7,11 @@ import info.nightscout.comboctl.base.testUtils.TestRefPacketItem
 import info.nightscout.comboctl.base.testUtils.checkTestPacketSequence
 import info.nightscout.comboctl.base.testUtils.produceTpLayerPacket
 import info.nightscout.comboctl.base.testUtils.runBlockingWithWatchdog
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.UtcOffset
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 class PumpIOTest {
     // Common test code.
@@ -59,7 +58,7 @@ class PumpIOTest {
         // flag set to false, and finished by an RT_BUTTON_STATUS
         // packet whose button code is NO_BUTTON.
         fun checkLongRTButtonPressPacketSequence(appLayerButton: ApplicationLayer.RTButton) {
-            assertTrue(
+            Assertions.assertTrue(
                 testIO.sentPacketData.size >= 3,
                 "Expected at least 3 items in sentPacketData list, got ${testIO.sentPacketData.size}"
             )
@@ -156,14 +155,14 @@ class PumpIOTest {
             buttonStatusChangedFlag: Boolean
         ) {
             val appLayerPacket = ApplicationLayer.Packet(packetData.toTransportLayerPacket())
-            assertEquals(ApplicationLayer.Command.RT_BUTTON_STATUS, appLayerPacket.command, "Application layer packet command mismatch")
-            assertEquals(rtButton.id.toByte(), appLayerPacket.payload[2], "RT_BUTTON_STATUS button byte mismatch")
-            assertEquals((if (buttonStatusChangedFlag) 0xB7 else 0x48).toByte(), appLayerPacket.payload[3], "RT_BUTTON_STATUS status flag mismatch")
+            Assertions.assertEquals(ApplicationLayer.Command.RT_BUTTON_STATUS, appLayerPacket.command, "Application layer packet command mismatch")
+            Assertions.assertEquals(rtButton.id.toByte(), appLayerPacket.payload[2], "RT_BUTTON_STATUS button byte mismatch")
+            Assertions.assertEquals((if (buttonStatusChangedFlag) 0xB7 else 0x48).toByte(), appLayerPacket.payload[3], "RT_BUTTON_STATUS status flag mismatch")
         }
 
         fun checkDisconnectPacketData(packetData: List<Byte>) {
             val appLayerPacket = ApplicationLayer.Packet(packetData.toTransportLayerPacket())
-            assertEquals(ApplicationLayer.Command.CTRL_DISCONNECT, appLayerPacket.command, "Application layer packet command mismatch")
+            Assertions.assertEquals(ApplicationLayer.Command.CTRL_DISCONNECT, appLayerPacket.command, "Application layer packet command mismatch")
         }
     }
 
@@ -197,7 +196,7 @@ class PumpIOTest {
 
             // 4 RT packets from the sendShortRTButtonPress() calls
             // above plus the final CTRL_DISCONNECT packet -> 5 packets.
-            assertEquals(5, testIO.sentPacketData.size)
+            Assertions.assertEquals(5, testIO.sentPacketData.size)
 
             // The two RT_BUTTON_STATUS packets (first one with button
             // code UP, second one with button code NO_BUTTON) that
@@ -393,7 +392,7 @@ class PumpIOTest {
 
             // 6 RT packets from the sendShortRTButtonPress() calls
             // above plus the final CTRL_DISCONNECT packet -> 7 packets.
-            assertEquals(7, testIO.sentPacketData.size)
+            Assertions.assertEquals(7, testIO.sentPacketData.size)
 
             // The 3 sendShortRTButtonPress() calls each sent two
             // packets, so we look at the first six packets here.
@@ -404,7 +403,7 @@ class PumpIOTest {
             for (index in 0 until 6) {
                 val appLayerPacket = ApplicationLayer.Packet(testIO.sentPacketData[index].toTransportLayerPacket())
                 val rtSequenceNumber = (appLayerPacket.payload[0].toPosInt() shl 0) or (appLayerPacket.payload[1].toPosInt() shl 8)
-                assertEquals(index, rtSequenceNumber)
+                Assertions.assertEquals(index, rtSequenceNumber)
             }
 
             testStates.checkDisconnectPacketData(testIO.sentPacketData[6])
@@ -457,7 +456,7 @@ class PumpIOTest {
 
             pumpIO.disconnect()
 
-            assertEquals(
+            Assertions.assertEquals(
                 ApplicationLayer.CMDErrorWarningStatus(errorOccurred = false, warningOccurred = true),
                 errorWarningStatus
             )
@@ -651,9 +650,9 @@ class PumpIOTest {
 
             pumpIO.disconnect()
 
-            assertEquals(expectedHistoryDeltaEvents.size, historyDelta.size)
+            Assertions.assertEquals(expectedHistoryDeltaEvents.size, historyDelta.size)
             for (events in expectedHistoryDeltaEvents.zip(historyDelta))
-                assertEquals(events.first, events.second)
+                Assertions.assertEquals(events.first, events.second)
         }
     }
 }

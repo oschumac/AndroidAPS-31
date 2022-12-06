@@ -3,8 +3,7 @@ package info.nightscout.comboctl.base.testUtils
 import info.nightscout.comboctl.base.ApplicationLayer
 import info.nightscout.comboctl.base.TransportLayer
 import info.nightscout.comboctl.base.toTransportLayerPacket
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions
 
 typealias TestPacketData = List<Byte>
 
@@ -16,7 +15,7 @@ sealed class TestRefPacketItem {
 }
 
 fun checkTestPacketSequence(referenceSequence: List<TestRefPacketItem>, testPacketSequence: List<TestPacketData>) {
-    assertTrue(testPacketSequence.size >= referenceSequence.size)
+    Assertions.assertTrue(testPacketSequence.size >= referenceSequence.size)
 
     referenceSequence.zip(testPacketSequence) { referenceItem, tpLayerPacketData ->
         val testTpLayerPacket = tpLayerPacketData.toTransportLayerPacket()
@@ -24,14 +23,14 @@ fun checkTestPacketSequence(referenceSequence: List<TestRefPacketItem>, testPack
         when (referenceItem) {
             is TestRefPacketItem.TransportLayerPacketItem -> {
                 val refPacketInfo = referenceItem.packetInfo
-                assertEquals(refPacketInfo.command, testTpLayerPacket.command, "Transport layer packet command mismatch")
-                assertEquals(refPacketInfo.payload, testTpLayerPacket.payload, "Transport layer packet payload mismatch")
-                assertEquals(refPacketInfo.reliable, testTpLayerPacket.reliabilityBit, "Transport layer packet reliability bit mismatch")
+                Assertions.assertEquals(refPacketInfo.command, testTpLayerPacket.command, "Transport layer packet command mismatch")
+                Assertions.assertEquals(refPacketInfo.payload, testTpLayerPacket.payload, "Transport layer packet payload mismatch")
+                Assertions.assertEquals(refPacketInfo.reliable, testTpLayerPacket.reliabilityBit, "Transport layer packet reliability bit mismatch")
             }
             is TestRefPacketItem.ApplicationLayerPacketItem -> {
                 val refAppLayerPacket = referenceItem.packet
                 val testAppLayerPacket = ApplicationLayer.Packet(testTpLayerPacket)
-                assertEquals(refAppLayerPacket, testAppLayerPacket)
+                Assertions.assertEquals(refAppLayerPacket, testAppLayerPacket)
             }
         }
     }
