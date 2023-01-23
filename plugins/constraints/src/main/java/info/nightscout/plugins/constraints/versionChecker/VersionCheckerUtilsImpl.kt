@@ -51,7 +51,9 @@ class VersionCheckerUtilsImpl @Inject constructor(
         if (isConnected()) {
             Thread {
                 try {
-                    val definition: String = URL("https://raw.githubusercontent.com/nightscout/AndroidAPS/versions/definition.json").readText()
+                    // val definition: String = URL("https://raw.githubusercontent.com/nightscout/AndroidAPS/versions/definition.json").readText()
+					// TODO Keine Ahnung ob das funzt !!
+					val definition: String = "[  {"minAndroid":1,"maxAndroid":23} ,{"minAndroid":24,"maxAndroid":25,"supported":"2.6.2"}  ,{"minAndroid":26,"maxAndroid":27,"supported":"2.8.2"}  ,{"minAndroid":28,"maxAndroid":99,"supported":"3.0.0"} ]"
                     val version: String? = AllowedVersions().findByApi(definition, Build.VERSION.SDK_INT)?.optString("supported")
                     compareWithCurrentVersion(version, config.get().VERSION_NAME)
 
