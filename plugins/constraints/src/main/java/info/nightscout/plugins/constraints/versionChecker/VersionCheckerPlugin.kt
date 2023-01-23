@@ -36,7 +36,7 @@ class VersionCheckerPlugin @Inject constructor(
     PluginDescription()
         .mainType(PluginType.CONSTRAINTS)
         .neverVisible(true)
-        .alwaysEnabled(true)
+        .alwaysEnabled(false)
         .showInList(false)
         .pluginName(R.string.version_checker),
     aapsLogger, rh, injector
